@@ -2,30 +2,75 @@
 function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
     global $wpdb;
 
-    error_log("DEBUG: gsr_apply_changes() called.");
-    error_log("DEBUG: Search: $search, Replace: $replace, Use Regex: " . ($use_regex ? "Yes" : "No"));
-    error_log("DEBUG: Selected Tables: " . print_r($selected_tables, true));
-
-    if (in_array('all', (array)$selected_tables)) {
-        $selected_tables = $wpdb->get_col("SHOW TABLES");
-    }
-
     if (empty($selected_tables)) {
         error_log("ERROR: No tables selected.");
-        echo "<p><strong>Please select at least one table.</strong></p>";
         return;
     }
 
+    // Manually define primary keys for core WordPress tables
+    $primary_key_overrides = [
+        'wp_postmeta' => 'meta_id',
+        'wp_posts' => 'ID',
+        'wp_comments' => 'comment_ID',
+        'wp_users' => 'ID',
+        'wp_options' => 'option_id',
+        'wp_terms' => 'term_id',
+        'wp_termmeta' => 'meta_id',
+        'wp_term_taxonomy' => 'term_taxonomy_id',
+    ];
+
     foreach ($selected_tables as $table) {
+        if (empty($table)) {
+            error_log("ERROR: Skipping empty table name.");
+            continue;
+        }
+
         error_log("Processing Table: $table");
 
+        // Ensure table name is properly formatted
+        $table = esc_sql($table);
+
+        // Use manual primary key override if available
+        $primary_key = $primary_key_overrides[$table] ?? null;
+
+        // If no override exists, try to detect primary key dynamically
+        if (!$primary_key) {
+            $primary_key = $wpdb->get_var("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS 
+                                           WHERE TABLE_NAME = '$table' 
+                                           AND COLUMN_KEY = 'PRI'");
+        }
+
+        if (!$primary_key) {
+            error_log("WARNING: No primary key found for table $table, skipping updates.");
+            continue;
+        }
+
+        error_log("INFO: Primary Key Detected - `$primary_key` for `$table`");
+
+        // Get all columns for the table
         $columns = $wpdb->get_col("SHOW COLUMNS FROM `$table`");
+
+        if (empty($columns)) {
+            error_log("WARNING: No columns found for table $table, skipping.");
+            continue;
+        }
+
         foreach ($columns as $column) {
-            $sql = "SELECT * FROM `$table` WHERE `$column` LIKE %s";
+            $sql = "SELECT `$primary_key`, `$column` FROM `$table` WHERE `$column` LIKE %s";
             $results = $wpdb->get_results($wpdb->prepare($sql, '%' . $wpdb->esc_like($search) . '%'));
 
+            if (empty($results)) {
+                error_log("INFO: No matches found in `$table`.`$column`.");
+                continue;
+            }
+
             foreach ($results as $row) {
-                $old_value = $row->$column ?? '';
+                if (!isset($row->$column)) {
+                    error_log("ERROR: Column `$column` does not exist in `$table`, skipping.");
+                    continue;
+                }
+
+                $old_value = $row->$column;
                 if ($old_value === '') {
                     continue;
                 }
@@ -46,31 +91,29 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
                         : str_ireplace($search, $replace, $old_value);
                 }
 
+                // Ensure primary key value exists
+                if (!isset($row->$primary_key)) {
+                    error_log("ERROR: Primary key `$primary_key` not found in table `$table`, skipping update.");
+                    continue;
+                }
+
                 // Perform the update
                 $update_result = $wpdb->update(
-                    "`$table`",
+                    "$table",
                     [$column => $new_value],
-                    ['ID' => $row->ID],
+                    [$primary_key => $row->$primary_key],
                     ['%s'],
                     ['%d']
                 );
 
                 if ($update_result === false) {
-                    error_log("ERROR: Failed to update $table.$column for ID: " . $row->ID);
+                    error_log("ERROR: Failed to update `$table`.`$column` for `$primary_key`: " . $row->$primary_key);
                 } else {
-                    error_log("SUCCESS: Updated $table.$column for ID: " . $row->ID);
+                    error_log("SUCCESS: Updated `$table`.`$column` for `$primary_key`: " . $row->$primary_key);
                 }
             }
         }
     }
-
-    // Refresh Slugs & Permalinks
-    refresh_wordpress_slugs($search, $replace);
-
-    // Clear Cache (Yoast SEO, Transients)
-    clear_wp_cache();
-
-    echo "<p><strong>Changes Applied Successfully!</strong></p>";
 }
 
 if (!function_exists('is_serialized')) {

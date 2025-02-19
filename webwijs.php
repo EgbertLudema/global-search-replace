@@ -1,26 +1,37 @@
 <?php
 /**
-* Plugin Name: Webwijs - Global search & replace
-* Description: Met deze plugin kun je woorden globally zoeken en vervangen
-* Version: 1
-* Author: Webwijs - Egbert
-* Author URI: https://www.webwijs.nu
-**/
-
-/**
- * Include scripts and styles
- */
+ * Plugin Name: Webwijs - Global search & replace
+ * Description: Met deze plugin kun je woorden globally zoeken en vervangen
+ * Version: 1
+ * Author: Webwijs - Egbert
+ * Author URI: https://www.webwijs.nu
+ **/
 
 // Load dependencies
 include_once plugin_dir_path(__FILE__) . 'includes/settings-page.php';
 include_once plugin_dir_path(__FILE__) . 'includes/search-replace.php';
 include_once plugin_dir_path(__FILE__) . 'includes/database-handler.php';
 
-add_action( 'admin_enqueue_scripts', function(){
-    wp_enqueue_script( 'main-js', plugin_dir_url(__FILE__) . 'assets/js/admin.js', ['jquery'], '0.1', false );
-    wp_enqueue_style( 'admin-css', plugin_dir_url( __FILE__ ) . 'assets/css/admin.min.css', '0.1' );
-} );
+/**
+ * Enqueue admin scripts & styles
+ */
+function gsr_enqueue_scripts() {
+    // Enqueue JS
+    wp_enqueue_script('gsr-admin-js', plugin_dir_url(__FILE__) . 'assets/js/admin.js', ['jquery'], '1.0', true);
 
+    // Localize AJAX URL for JavaScript
+    wp_localize_script('gsr-admin-js', 'gsr_ajax', [
+        'ajax_url' => admin_url('admin-ajax.php')
+    ]);
+
+    // Enqueue CSS
+    wp_enqueue_style('admin-css', plugin_dir_url(__FILE__) . 'assets/css/admin.min.css', [], '0.1');
+}
+add_action('admin_enqueue_scripts', 'gsr_enqueue_scripts');
+
+/**
+ * Handle AJAX request for applying changes
+ */
 add_action('wp_ajax_apply_changes', 'gsr_apply_changes_ajax');
 
 function gsr_apply_changes_ajax() {
