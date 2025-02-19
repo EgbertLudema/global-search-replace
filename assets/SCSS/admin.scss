@@ -1,0 +1,18 @@
+.wrap, .form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+}
+form{
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: #0000000f 0px 11px 20px;
+}
+.flex{
+    display: flex;
+}
+.flex-col{
+    flex-direction: column;
+}
