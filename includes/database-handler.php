@@ -21,11 +21,11 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
 
     foreach ($selected_tables as $table) {
         if (empty($table)) {
-            error_log("ERROR: Skipping empty table name.");
+            // error_log("ERROR: Skipping empty table name.");
             continue;
         }
 
-        error_log("Processing Table: $table");
+        // error_log("Processing Table: $table");
 
         // Ensure table name is properly formatted
         $table = esc_sql($table);
@@ -41,17 +41,17 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
         }
 
         if (!$primary_key) {
-            error_log("WARNING: No primary key found for table $table, skipping updates.");
+            // error_log("WARNING: No primary key found for table $table, skipping updates.");
             continue;
         }
 
-        error_log("INFO: Primary Key Detected - `$primary_key` for `$table`");
+        // error_log("INFO: Primary Key Detected - `$primary_key` for `$table`");
 
         // Get all columns for the table
         $columns = $wpdb->get_col("SHOW COLUMNS FROM `$table`");
 
         if (empty($columns)) {
-            error_log("WARNING: No columns found for table $table, skipping.");
+            // error_log("WARNING: No columns found for table $table, skipping.");
             continue;
         }
 
@@ -60,13 +60,13 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
             $results = $wpdb->get_results($wpdb->prepare($sql, '%' . $wpdb->esc_like($search) . '%'));
 
             if (empty($results)) {
-                error_log("INFO: No matches found in `$table`.`$column`.");
+                // error_log("INFO: No matches found in `$table`.`$column`.");
                 continue;
             }
 
             foreach ($results as $row) {
                 if (!isset($row->$column)) {
-                    error_log("ERROR: Column `$column` does not exist in `$table`, skipping.");
+                    // error_log("ERROR: Column `$column` does not exist in `$table`, skipping.");
                     continue;
                 }
 
@@ -93,7 +93,7 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
 
                 // Ensure primary key value exists
                 if (!isset($row->$primary_key)) {
-                    error_log("ERROR: Primary key `$primary_key` not found in table `$table`, skipping update.");
+                    // error_log("ERROR: Primary key `$primary_key` not found in table `$table`, skipping update.");
                     continue;
                 }
 
@@ -107,9 +107,7 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
                 );
 
                 if ($update_result === false) {
-                    error_log("ERROR: Failed to update `$table`.`$column` for `$primary_key`: " . $row->$primary_key);
-                } else {
-                    error_log("SUCCESS: Updated `$table`.`$column` for `$primary_key`: " . $row->$primary_key);
+                     error_log("ERROR: Failed to update `$table`.`$column` for `$primary_key`: " . $row->$primary_key);
                 }
             }
         }
@@ -136,23 +134,4 @@ function recursive_replace($search, $replace, $data, $use_regex) {
         return $use_regex ? preg_replace("/{$search}/i", $replace, $data) : str_ireplace($search, $replace, $data);
     }
     return $data;
-}
-
-function refresh_wordpress_slugs($search, $replace) {
-    global $wpdb;
-
-    // Update `post_name` (slugs)
-    $wpdb->query("UPDATE wp_posts SET post_name = REPLACE(post_name, '{$search}', '{$replace}')");
-
-    // Regenerate permalinks
-    flush_rewrite_rules();
-}
-
-function clear_wp_cache() {
-    delete_transient('wpseo_total_unindexed_count');
-    delete_transient('wpseo_unindexed_post_count');
-    delete_transient('wpseo_unindexed_term_count');
-
-    // Clear WordPress object cache
-    wp_cache_flush();
 }

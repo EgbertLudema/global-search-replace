@@ -45,7 +45,7 @@ function gsr_apply_changes_ajax() {
     $use_regex = isset($_POST['use_regex']);
     $tables = $_POST['tables'];
 
-    error_log("AJAX request received: Search [$search] Replace [$replace] on Tables: " . print_r($tables, true));
+    // error_log("AJAX request received: Search [$search] Replace [$replace] on Tables: " . print_r($tables, true));
 
     gsr_apply_changes($search, $replace, $use_regex, $tables);
 

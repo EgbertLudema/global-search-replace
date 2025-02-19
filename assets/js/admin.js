@@ -12,15 +12,28 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    console.log("✅ Changes Applied Successfully");
-                    document.getElementById("apply-changes").insertAdjacentHTML('beforeend', "<p><strong>✅ Changes Applied Successfully!</strong></p>");
+                    document.getElementById("preview-container").innerHTML = "";
+
+                    // Create a temporary succes pop-up
+                    let popup = document.createElement("div");
+                    popup.classList.add("pop-up");
+                    popup.innerHTML = '<p><strong>✅ Changes Applied Successfully!</strong></p>';
+
+                    // Append the pop-up
+                    document.getElementById("search_replace_container").appendChild(popup);
+
+                    // Remove pop-up after 5 seconds
+                    setTimeout(() => {
+                        popup.remove();
+                    }, 5000);
                 } else {
-                    console.error("❌ Error:", data.data.message);
+                    console.error("Error:", data.data.message);
                     alert("Error: " + data.data.message);
                 }
             })
             .catch(error => {
-                console.error("❌ Fetch Error:", error);
+                console.error("Fetch Error:", error);
             });
     });
 });
+
