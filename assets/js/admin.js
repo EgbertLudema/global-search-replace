@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById("preview-container").innerHTML = "";
+                    document.getElementById("preview-container").remove();
 
                     // Create a temporary succes pop-up
                     let popup = document.createElement("div");
@@ -36,4 +36,3 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     });
 });
-

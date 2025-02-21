@@ -33,17 +33,28 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
                     $results = $wpdb->get_results($wpdb->prepare($sql, '%' . $wpdb->esc_like($search) . '%'));
 
                     if ($results) {
-                        echo "<h4>Column: {$column}</h4><ul>";
+                        echo "<h4>Column: {$column}</h4><ul class='before-after-list'>";
                         foreach ($results as $row) {
                             $old_value = $row->$column ?? '';
                             if ($old_value === '') {
                                 continue;
                             }
 
-                            $new_value = $use_regex ? preg_replace("/{$search}/i", $replace, $old_value) : str_ireplace($search, $replace, $old_value);
+                            $search_highlighted = "<span class='highlighted'>{$search}</span>";
+                            $replace_highlighted = "<span class='highlighted'>{$replace}</span>";
 
-                            echo "<li><strong>Before:</strong> " . esc_html($old_value) . "<br>";
-                            echo "<strong>After:</strong> " . esc_html($new_value) . "</li>";
+                            if ($use_regex) {
+                                $new_value = preg_replace("/{$search}/i", $replace, $old_value);
+                                $old_value_highlighted = preg_replace("/{$search}/i", $search_highlighted, $old_value);
+                                $new_value_highlighted = preg_replace("/{$replace}/i", $replace_highlighted, $new_value);
+                            } else {
+                                $new_value = str_ireplace($search, $replace, $old_value);
+                                $old_value_highlighted = str_ireplace($search, $search_highlighted, $old_value);
+                                $new_value_highlighted = str_ireplace($replace, $replace_highlighted, $new_value);
+                            }
+
+                            echo "<li><div class='before'><strong>Before:</strong> " . wp_kses_post($old_value_highlighted) . "</div>";
+                            echo "<div class='after'><strong>After:</strong> " . wp_kses_post($new_value_highlighted) . "</div></li>";
                         }
                         echo "</ul>";
                     }
