@@ -14,7 +14,7 @@ add_action('admin_menu', 'gsr_admin_menu');
 
 function gsr_settings_page() {
     global $wpdb;
-    $tables = $wpdb->get_col("SHOW TABLES"); // Fetch all table names
+    $tables = $wpdb->get_col("SHOW TABLES");
 
     ?>
     <div id="search_replace_container">
