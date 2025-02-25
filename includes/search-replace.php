@@ -33,6 +33,7 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
                     $results = $wpdb->get_results($wpdb->prepare($sql, '%' . $wpdb->esc_like($search) . '%'));
 
                     if ($results) {
+                        // Add select button
                         echo "<h4>Column: {$column}</h4><ul class='before-after-list'>";
                         foreach ($results as $row) {
                             $old_value = $row->$column ?? '';
@@ -53,16 +54,34 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
                                 $new_value_highlighted = str_ireplace($replace, $replace_highlighted, $new_value);
                             }
 
-                            echo "<li><div class='before'><strong>Before:</strong> " . wp_kses_post($old_value_highlighted) . "</div>";
-                            echo "<div class='after'><strong>After:</strong> " . wp_kses_post($new_value_highlighted) . "</div></li>";
+                            $allowed_tags = [
+                                'span' => ['class' => []],
+                                'strong' => [],
+                                'em' => [],
+                                'b' => [],
+                                'i' => [],
+                                'p' => [],
+                                'br' => [],
+                                'ul' => [],
+                                'ol' => [],
+                                'li' => [],
+                                'a' => ['href' => [], 'title' => []]
+                            ];
+
+                            echo "<li>";
+                                echo "<div class='before'><strong>Before:</strong> " . wp_kses($old_value_highlighted, $allowed_tags) . "</div>";
+                                echo "<div class='after'><strong>After:</strong> " . wp_kses($new_value_highlighted, $allowed_tags) . "</div>";
+                            echo "</li>";
+
                         }
                         echo "</ul>";
                     }
                 }
             }
 
-            // Add Apply Changes button
+            // Apply Changes button
             echo '<input type="submit" name="gsr_apply" value="Apply Changes" class="button-primary">';
+            // Add apply selected changes button
         echo '</form>';
     echo "</div>";
 
