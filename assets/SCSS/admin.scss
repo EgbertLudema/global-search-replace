@@ -110,18 +110,44 @@ form{
 
 .before-after-list li{
     margin-bottom: 30px;
-    border-radius: 5px;
-    overflow: clip;
+}
+
+.post-info{
+    position: sticky;
+    top: 100px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    padding: 0px 10px;
+}
+
+.post-info a{
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+
+.post-info a svg{
+    width: 12px;
+    height: 12px;
+}
+
+.post-info a svg path{
+    stroke: #2271b1;
 }
 
 .before-after-list .before,
 .before-after-list .after{
     padding: 10px;
     overflow-wrap: break-word;
+    overflow: clip;
 }
 
 .before-after-list .before{
     background: #ffe7c9;
+    border-radius: 5px 5px 0 0;
 }
 
 .before-after-list .before .highlighted{
@@ -131,6 +157,7 @@ form{
 
 .before-after-list .after{
     background: #d5e9ff;
+    border-radius: 0 0 5px 5px;
 }
 
 .before-after-list .after .highlighted{
