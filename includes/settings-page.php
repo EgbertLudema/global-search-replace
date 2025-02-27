@@ -34,17 +34,23 @@ function gsr_settings_page() {
                         <input type="checkbox" id="use_regex" name="use_regex"> Use Regex
                         <span class="questionmark">?</span>
                         <div class="tool-tip">
-                            Enable this option to use **Regular Expressions (Regex)** for advanced search patterns.<br>
-                            - **Example 1:** `/[a-z]+/` → Matches any lowercase word.<br>
-                            - **Example 2:** `/\d{4}/` → Matches a four-digit number.<br>
-                            - **Example 3:** `/^Hello/` → Matches text starting with "Hello".<br>
-                            ⚠️ Use carefully, as Regex patterns are case-sensitive and can affect multiple matches.
+                            Enable this option to use <strong>Regular Expressions (Regex)</strong> for advanced search patterns.<br><br>
+                            - <strong>Example 1:</strong> `/[a-z]+/` → Matches any lowercase word.<br>
+                            - <strong>Example 2:</strong> `/\d{4}/` → Matches a four-digit number.<br>
+                            - <strong>Example 3:</strong> `/^Hello/` → Matches text starting with "Hello".<br><br>
+                            <strong>⚠️ Use carefully, as Regex patterns are case-sensitive and can affect multiple matches. ⚠️</strong>
                         </div>
                     </label>
                 </div>
 
                 <div class="row flex flex-col">
-                    <label for="tables">Select Tables (Hold Ctrl/Cmd to select multiple):</label>
+                    <label class="select-tables" for="tables">
+                        Select Tables, Hold
+                        <div class="key"><span class="lower-row-text">control</span></div>
+                        or
+                        <div class="key"><span class="lower-row-text">command</span><span class="absolute-right icon">&#8984;</span></div>
+                        to select multiple tables.
+                    </label>
                     <select name="tables[]" id="tables" multiple size="10">
                         <option value="all">-- All Tables --</option>
                         <?php foreach ($tables as $table) : ?>
