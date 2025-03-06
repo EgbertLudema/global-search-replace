@@ -76,8 +76,6 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
                                         'a' => ['href' => [], 'title' => []]
                                     ];
 
-                                    // var_dump($row);
-
                                     echo "<li>";
                                         if ($table === 'wp_postmeta' or $table === 'wp_posts') {
                                             $post_id = isset($row->post_id) ? $row->post_id : (isset($row->ID) ? $row->ID : null);
@@ -100,10 +98,10 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
                                             }
                                             echo "</div>";
                                         }
+
                                         echo "<div class='before'><strong>Before:</strong> " . wp_kses($old_value_highlighted, $allowed_tags) . "</div>";
                                         echo "<div class='after'><strong>After:</strong> " . wp_kses($new_value_highlighted, $allowed_tags) . "</div>";
                                     echo "</li>";
-
                                 }
                             echo "</ul>";
                         }
@@ -126,5 +124,14 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
         if (!empty($_POST['selected_tables'])) {
             gsr_apply_changes($_POST['search_text'], $_POST['replace_text'], isset($_POST['use_regex']), $_POST['selected_tables']);
         }
+    }
+}
+
+function render_oxygen_page($post_id) {
+    // Ensure Oxygen is loaded
+    if (function_exists('ct_template_output')) {
+        echo ct_template_output($post_id);
+    } else {
+        echo "<p>Oxygen Builder is not active or content not found.</p>";
     }
 }
