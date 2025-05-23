@@ -11,6 +11,8 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
         return;
     }
 
+    $has_results = false;
+
     echo "<div id='preview-container' class='wrap'>";
         echo "<h3>Preview of Changes</h3>";
 
@@ -24,19 +26,20 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
             }
 
             foreach ($selected_tables as $table) {
-                echo '<div class="table-container">';
-                    echo "<div class='table-header'>";
-                        echo "<input type='checkbox' name='selected_tables[]' value='" . esc_attr($table) . "'> ";
-                        echo "<h3>Table: " . esc_html($table) . "</h3>";
-                    echo "</div>";
+                $columns = $wpdb->get_col("SHOW COLUMNS FROM `$table`");
 
-                    $columns = $wpdb->get_col("SHOW COLUMNS FROM `$table`");
+                foreach ($columns as $column) {
+                    $sql = "SELECT * FROM `$table` WHERE `$column` LIKE %s";
+                    $results = $wpdb->get_results($wpdb->prepare($sql, '%' . $wpdb->esc_like($search) . '%'));
 
-                    foreach ($columns as $column) {
-                        $sql = "SELECT * FROM `$table` WHERE `$column` LIKE %s";
-                        $results = $wpdb->get_results($wpdb->prepare($sql, '%' . $wpdb->esc_like($search) . '%'));
+                    if ($results) {
+                        $has_results = true;
+                        echo '<div class="table-container">';
+                            echo "<div class='table-header'>";
+                                echo "<input type='checkbox' name='selected_tables[]' value='" . esc_attr($table) . "'> ";
+                                echo "<h3>Table: " . esc_html($table) . "</h3>";
+                            echo "</div>";
 
-                        if ($results) {
                             echo "<h4>Column: {$column}</h4>";
                             echo "<ul class='before-after-list'>";
                                 foreach ($results as $row) {
@@ -104,16 +107,19 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
                                     echo "</li>";
                                 }
                             echo "</ul>";
-                        }
+                        echo "</div>";
                     }
-                echo "</div>";
+                }
             }
 
-            // Apply Changes buttons
-            echo '<div class="apply_buttons">';
-                echo '<input type="submit" name="gsr_apply" value="Apply all Changes" class="button-secondary">';
-                echo '<input type="submit" name="gsr_apply_selected" value="Apply selected Tables" class="button-primary">';
-            echo '</div>';
+            if ($has_results) {
+                echo '<div class="apply_buttons">';
+                    echo '<input type="submit" name="gsr_apply" value="Apply all Changes" class="button-secondary">';
+                    echo '<input type="submit" name="gsr_apply_selected" value="Apply selected Tables" class="button-primary">';
+                echo '</div>';
+            } else {
+                echo '<p><strong>No results of "'.$search.'" found.</strong></p>';
+            }
         echo '</form>';
     echo "</div>";
 
@@ -124,14 +130,5 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
         if (!empty($_POST['selected_tables'])) {
             gsr_apply_changes($_POST['search_text'], $_POST['replace_text'], isset($_POST['use_regex']), $_POST['selected_tables']);
         }
-    }
-}
-
-function render_oxygen_page($post_id) {
-    // Ensure Oxygen is loaded
-    if (function_exists('ct_template_output')) {
-        echo ct_template_output($post_id);
-    } else {
-        echo "<p>Oxygen Builder is not active or content not found.</p>";
     }
 }
