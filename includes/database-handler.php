@@ -21,11 +21,8 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
 
     foreach ($selected_tables as $table) {
         if (empty($table)) {
-            // error_log("ERROR: Skipping empty table name.");
             continue;
         }
-
-        // error_log("Processing Table: $table");
 
         // Ensure table name is properly formatted
         $table = esc_sql($table);
@@ -41,32 +38,30 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
         }
 
         if (!$primary_key) {
-            // error_log("WARNING: No primary key found for table $table, skipping updates.");
             continue;
         }
-
-        // error_log("INFO: Primary Key Detected - `$primary_key` for `$table`");
 
         // Get all columns for the table
         $columns = $wpdb->get_col("SHOW COLUMNS FROM `$table`");
 
         if (empty($columns)) {
-            // error_log("WARNING: No columns found for table $table, skipping.");
             continue;
         }
 
         foreach ($columns as $column) {
             $sql = "SELECT `$primary_key`, `$column` FROM `$table` WHERE `$column` LIKE %s";
+            if ($table === 'wp_posts') {
+                $sql .= " AND post_type != 'revision'";
+            }
+
             $results = $wpdb->get_results($wpdb->prepare($sql, '%' . $wpdb->esc_like($search) . '%'));
 
             if (empty($results)) {
-                // error_log("INFO: No matches found in `$table`.`$column`.");
                 continue;
             }
 
             foreach ($results as $row) {
                 if (!isset($row->$column)) {
-                    // error_log("ERROR: Column `$column` does not exist in `$table`, skipping.");
                     continue;
                 }
 
@@ -93,7 +88,6 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
 
                 // Ensure primary key value exists
                 if (!isset($row->$primary_key)) {
-                    // error_log("ERROR: Primary key `$primary_key` not found in table `$table`, skipping update.");
                     continue;
                 }
 
@@ -107,10 +101,44 @@ function gsr_apply_changes($search, $replace, $use_regex, $selected_tables) {
                 );
 
                 if ($update_result === false) {
-                     error_log("ERROR: Failed to update `$table`.`$column` for `$primary_key`: " . $row->$primary_key);
+                    error_log("ERROR: Failed to update `$table`.`$column` for `$primary_key`: " . $row->$primary_key);
                 }
             }
         }
+    }
+}
+
+function gsr_apply_row_change($search, $replace, $use_regex, $table, $row_id, $column) {
+    global $wpdb;
+
+    $primary_key = 'ID'; // Default fallback
+    if ($table === 'wp_postmeta') $primary_key = 'meta_id';
+    if ($table === 'wp_comments') $primary_key = 'comment_ID';
+    if ($table === 'wp_options') $primary_key = 'option_id';
+    if ($table === 'wp_terms') $primary_key = 'term_id';
+    if ($table === 'wp_termmeta') $primary_key = 'meta_id';
+    if ($table === 'wp_term_taxonomy') $primary_key = 'term_taxonomy_id';
+
+    $current_value = $wpdb->get_var($wpdb->prepare(
+        "SELECT `$column` FROM `$table` WHERE `$primary_key` = %d", $row_id
+    ));
+
+    if ($current_value) {
+        $new_value = $use_regex
+            ? preg_replace("/{$search}/i", $replace, $current_value)
+            : str_ireplace($search, $replace, $current_value);
+
+        if ($new_value !== $current_value) {
+            $wpdb->update(
+                $table,
+                [$column => $new_value],
+                [$primary_key => $row_id]
+            );
+        } else {
+            error_log("DEBUG: No change needed for $table row $row_id column $column");
+        }
+    } else {
+        error_log("DEBUG: No current value found for $table row $row_id column $column");
     }
 }
 

@@ -45,9 +45,16 @@ function gsr_apply_changes_ajax() {
     $use_regex = isset($_POST['use_regex']);
     $tables = $_POST['tables'];
 
-    // error_log("AJAX request received: Search [$search] Replace [$replace] on Tables: " . print_r($tables, true));
-
-    gsr_apply_changes($search, $replace, $use_regex, $tables);
+    // Check which button was pressed
+    if (isset($_POST['gsr_apply_selected']) && !empty($_POST['selected_rows'])) {
+        foreach ($_POST['selected_rows'] as $table => $rows) {
+            foreach ($rows as $row_id => $column) {
+                gsr_apply_row_change($search, $replace, $use_regex, $table, $row_id, $column);
+            }
+        }
+    } else {
+        gsr_apply_changes($search, $replace, $use_regex, $tables);
+    }
 
     wp_send_json_success(["message" => "Changes Applied Successfully"]);
 }
