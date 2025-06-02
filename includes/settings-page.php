@@ -18,7 +18,7 @@ function gsr_settings_page() {
 
     ?>
     <div id="search_replace_container">
-        <div class="wrap">
+        <div class="gsr_wrap wrap">
             <h2>Global search & replace</h2>
             <form class="sr-form" method="post" action="">
                 <div class="row">

@@ -13,7 +13,7 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
 
     $has_results = false;
 
-    echo "<div id='preview-container' class='wrap'>";
+    echo "<div id='preview-container' class='gsr_wrap'>";
         echo "<h3>Preview of Changes</h3>";
 
         echo '<form id="apply-changes" method="post">';

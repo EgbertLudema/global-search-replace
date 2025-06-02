@@ -1,11 +1,15 @@
 <?php
 /**
  * Plugin Name: Webwijs - Global search & replace
- * Description: Met deze plugin kun je woorden globally zoeken en vervangen
+ * Description: Met deze plugin kun je woorden globaal zoeken en vervangen, hierbij krijg je eerst een preview van de zoekresultaten te zien waarna je kunt selecteren wat je wil vervangen of alles wil vervangen.
  * Version: 1
- * Author: Webwijs - Egbert
+ * Author: Webwijs
  * Author URI: https://www.webwijs.nu
  **/
+
+// Gemaakt door: Egbert Ludema
+// Opgeleverd: Juni 2025
+// Stage opdracht
 
 // Load dependencies
 include_once plugin_dir_path(__FILE__) . 'includes/settings-page.php';
