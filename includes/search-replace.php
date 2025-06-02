@@ -13,7 +13,7 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
 
     $has_results = false;
 
-    echo "<div id='preview-container' class='gsr_wrap'>";
+    echo "<div id='preview-container' class='gsr_wrap wrap'>";
         echo "<h3>Preview of Changes</h3>";
 
         echo '<form id="apply-changes" method="post">';
@@ -115,6 +115,8 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
                     }
                 }
             }
+
+            echo '<div class="pop-up-tip"><p><strong>💡 TIP! Before making changes, create a database backup so you can restore it if something goes wrong.</strong></p></div>';
 
             if ($has_results) {
                 echo '<div class="apply_buttons">';
