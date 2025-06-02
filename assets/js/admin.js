@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     document.getElementById("apply-changes").addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevent form reload
+        event.preventDefault();
 
         var formData = new FormData(this);
         formData.append("action", "apply_changes"); // Ensure WordPress recognizes the action
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function() {
             formData.append(lastClickedButton, "1");
         }
 
-        fetch(gsr_ajax.ajax_url, { // Correct AJAX URL from PHP
+        fetch(gsr_ajax.ajax_url, {
             method: "POST",
             body: formData
         }) 
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     popup.classList.add("pop-up");
                     popup.innerHTML = '<p><strong>✅ Changes Applied Successfully!</strong></p>';
 
-                    // Append the pop-up
+                    // Add pop-up to container
                     document.getElementById("search_replace_container").appendChild(popup);
 
                     // Remove pop-up after 5 seconds

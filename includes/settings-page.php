@@ -1,8 +1,8 @@
 <?php
 function gsr_admin_menu() {
     add_menu_page(
-        'Global Search & Replace',
-        'Search & Replace',
+        'Global search & replace',
+        'Search & replace',
         'manage_options',
         'gsr-settings',
         'gsr_settings_page',
@@ -19,7 +19,7 @@ function gsr_settings_page() {
     ?>
     <div id="search_replace_container">
         <div class="wrap">
-            <h2>Global Search & Replace</h2>
+            <h2>Global search & replace</h2>
             <form class="sr-form" method="post" action="">
                 <div class="row">
                     <label for="search_text">Search for:</label>
