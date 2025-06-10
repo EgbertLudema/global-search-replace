@@ -35,24 +35,24 @@ function gsr_settings_page() {
             <h2>Global search & replace</h2>
             <form class="sr-form" method="post" action="">
                 <div class="row">
-                    <label for="search_text">Search for:</label>
+                    <label for="search_text">Zoeken voor:</label>
                     <input type="text" id="search_text" name="search_text" required>
 
-                    <label for="replace_text">Replace with:</label>
+                    <label for="replace_text">Vervangen met:</label>
                     <input type="text" id="replace_text" name="replace_text" required>
                 </div>
 
                 <?php if (!$is_klant): ?>
                     <div class="row">
                         <label class="info" for="use_regex">
-                            <input type="checkbox" id="use_regex" name="use_regex"> Use Regex
+                            <input type="checkbox" id="use_regex" name="use_regex"> Regex gebruiken
                             <span class="questionmark">?</span>
                             <div class="tool-tip">
-                                Enable this option to use <strong>Regular Expressions (Regex)</strong> for advanced search patterns.<br><br>
-                                - <strong>Example 1:</strong> `/[a-z]+/` → Matches any lowercase word.<br>
-                                - <strong>Example 2:</strong> `/\d{4}/` → Matches a four-digit number.<br>
-                                - <strong>Example 3:</strong> `/^Hello/` → Matches text starting with "Hello".<br><br>
-                                <strong>⚠️ Use carefully, as Regex patterns are case-sensitive and can affect multiple matches. ⚠️</strong>
+                                Schakel deze optie in om <strong>Reguliere Expressies (Regex)</strong> te gebruiken voor geavanceerde zoekpatronen.<br><br>
+                                - <strong>Voorbeeld 1:</strong> /[a-z]+/ → Komt overeen met elk woord in kleine letters.<br>
+                                - <strong>Voorbeeld 2:</strong> /\d{4}/ → Komt overeen met een getal van vier cijfers.<br>
+                                - <strong>Voorbeeld 3:</strong> /^Hello/ → Komt overeen met tekst die begint met "Hello".<br><br>
+                                <strong>⚠️ Letop bij het gebruik van Regex, want Regex-patronen zijn hoofdlettergevoelig en kunnen meerdere overeenkomsten beïnvloeden. ⚠️</strong>
                             </div>
                         </label>
                     </div>
@@ -61,16 +61,16 @@ function gsr_settings_page() {
                 <div class="row flex flex-col">
                     <label class="select-tables" for="tables">
                         <label class="select-tables" for="tables">
-                            Select Tables, Hold
+                            Meerdere tabellen selectren? Houd
                             <div class="key"><span class="lower-row-text">control</span></div>
-                            or
+                            of
                             <div class="key"><span class="lower-row-text">command</span><span class="absolute-right icon">&#8984;</span></div>
-                            to select multiple tables.
+                            ingedrukt om meerdere tabellen aan te klikken
                         </label>
                     </label>
                     <select name="tables[]" id="tables" multiple size="10">
                         <?php if (!$is_klant): ?>
-                            <option value="all">-- All Tables --</option>
+                            <option value="all">-- Alle Tabellen --</option>
                         <?php endif; ?>
                         <?php foreach ($tables as $table) : ?>
                             <?php if (!$is_klant || in_array($table, $allowed_tables)) : ?>
@@ -82,7 +82,7 @@ function gsr_settings_page() {
                     </select>
                 </div>
 
-                <input type="submit" name="gsr_submit" value="Preview Changes" class="button-primary">
+                <input type="submit" name="gsr_submit" value="Preview bekijken" class="button-primary">
             </form>
         </div>
         <?php

@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Create a temporary succes pop-up
                     let popup = document.createElement("div");
                     popup.classList.add("pop-up");
-                    popup.innerHTML = '<p><strong>✅ Changes Applied Successfully!</strong></p>';
+                    popup.innerHTML = '<p><strong>✅ Alles succesvol vervangen!</strong></p>';
 
                     // Add pop-up to container
                     document.getElementById("search_replace_container").appendChild(popup);
