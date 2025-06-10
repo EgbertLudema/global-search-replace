@@ -1,6 +1,9 @@
 <?php
 function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
     global $wpdb;
+    $current_user = wp_get_current_user();
+    $klant_exists = get_role('klant') !== null;
+    $is_klant = $klant_exists && in_array('klant', (array) $current_user->roles);
 
     if (in_array('all', (array)$selected_tables)) {
         $selected_tables = $wpdb->get_col("SHOW TABLES");
@@ -14,7 +17,7 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
     $has_results = false;
 
     echo "<div id='preview-container' class='gsr_wrap wrap'>";
-        echo "<h3>Preview of Changes</h3>";
+        echo "<h3>Voorbeeld(en) van aanpassing(en):</h3>";
 
         echo '<form id="apply-changes" method="post">';
             echo '<input type="hidden" name="search_text" value="' . esc_attr($search) . '">';
@@ -116,7 +119,9 @@ function gsr_preview_results($search, $replace, $use_regex, $selected_tables) {
                 }
             }
 
-            echo '<div class="pop-up-tip"><p><strong>💡 TIP! Maak altijd eerst een back-up van je database voordat je aanpassingen doet.</strong></p></div>';
+            if(!$is_klant){
+                echo '<div class="pop-up-tip"><p><strong>💡 TIP! Maak altijd eerst een back-up van je database voordat je aanpassingen doet.</strong></p></div>';
+            }
 
             if ($has_results) {
                 echo '<div class="apply_buttons">';
