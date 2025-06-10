@@ -9,7 +9,7 @@
 
 // Gemaakt door: Egbert Ludema
 // Opgeleverd: Juni 2025
-// Stage opdracht
+// Stage opdracht tijdens de stage periode van Feb 2025 tot Jun 2025 bij Webwijs.
 
 // Load dependencies
 include_once plugin_dir_path(__FILE__) . 'includes/settings-page.php';
